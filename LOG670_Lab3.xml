@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
+
+const int NVAA = 6;         // nombre de voitures du cote A
+const int NVAB = 4;         // nombre de voitures du cote B
+// const int capacitePont = 3;    // nombre de voitures pouvant etre sur le pont
+
+// typedef int[0,capacitePont-1] list_pont;
+
+typedef int[0, NVAA-1] listeVoituresA;
+typedef int[0, NVAB-1] listeVoituresB;
+
+
+
+
+// chan appr[nombreA], stop[nombreA], leave[nombreA];</declaration><template><name x="5" y="5">CRTLP</name><declaration>// Place local declarations here.
+
+</declaration><location id="id0" x="-224" y="-152"></location><init ref="id0"/><transition><source ref="id0"/><target ref="id0"/><nail x="-144" y="-152"/><nail x="-144" y="-224"/><nail x="-224" y="-224"/></transition></template><template><name>VAA</name><parameter>const listeVoituresA id</parameter><declaration>// Place local declarations here.</declaration><location id="id1" x="184" y="-120"><name x="144" y="-104">ApresTraverse</name></location><location id="id2" x="64" y="-160"><name x="40" y="-200">SurPont</name></location><location id="id3" x="-48" y="-120"><name x="-72" y="-160">Depart</name></location><location id="id4" x="-160" y="-120"><name x="-184" y="-160">Attente</name></location><location id="id5" x="-280" y="-120"><name x="-312" y="-160">Approche</name></location><init ref="id5"/><transition><source ref="id1"/><target ref="id1"/><nail x="224" y="-120"/><nail x="224" y="-160"/><nail x="184" y="-160"/></transition><transition><source ref="id2"/><target ref="id1"/><nail x="120" y="-160"/></transition><transition><source ref="id3"/><target ref="id2"/><nail x="0" y="-160"/></transition><transition><source ref="id4"/><target ref="id3"/></transition><transition><source ref="id5"/><target ref="id4"/></transition></template><template><name>VAB</name><parameter>const listeVoituresB id</parameter><declaration>// Place local declarations here.</declaration><location id="id6" x="-256" y="-48"><name x="-296" y="-32">ApresTraverse</name></location><location id="id7" x="-136" y="-80"><name x="-160" y="-120">SurPont</name></location><location id="id8" x="-16" y="-48"><name x="-32" y="-88">Depart</name></location><location id="id9" x="104" y="-48"><name x="80" y="-88">Attente</name></location><location id="id10" x="224" y="-48"><name x="192" y="-88">Approche</name></location><init ref="id10"/><transition><source ref="id6"/><target ref="id6"/><nail x="-296" y="-48"/><nail x="-296" y="-88"/><nail x="-256" y="-88"/></transition><transition><source ref="id7"/><target ref="id6"/><nail x="-200" y="-80"/></transition><transition><source ref="id8"/><target ref="id7"/><nail x="-56" y="-80"/></transition><transition><source ref="id9"/><target ref="id8"/></transition><transition><source ref="id10"/><target ref="id9"/></transition></template><template><name>P</name><location id="id11" x="0" y="0"></location><init ref="id11"/><transition><source ref="id11"/><target ref="id11"/><nail x="104" y="0"/><nail x="104" y="-72"/><nail x="0" y="-72"/></transition></template><system>// Place template instantiations here.
+// Process = CRTLP();
+
+// List one or more processes to be composed into a system.
+system VAA, VAB, CRTLP, P;</system></nta>
