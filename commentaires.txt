@@ -1,0 +1,18 @@
+
+On peut y aller avec le temps.
+
+Horloge horlogePont: À chaque 15 on change de direction. Le pont peut changer de direction pendant qu'il y a des voitures dessus; dans un tel cas, on attend que les voitures déjà sur le pont quittent.
+
+Voiture A arrive au pont
+Voiture A se met en queue.
+Si
+  -la direction du pont est A
+  -le pont ne contient pas de voitures en direction B
+La voiture A peut aller sur le pont.
+
+
+
+
+vérification à faire:
+-il n'y a jamais de voitures A et B en même temps sur le pont
+

@@ -1,20 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
 
-const int NVAA = 6;         // nombre de voitures du cote A
-const int NVAB = 4;         // nombre de voitures du cote B
-// const int capacitePont = 3;    // nombre de voitures pouvant etre sur le pont
+const int NVAA = 1;         // nombre de voitures du cote A (direction -&gt;)
+const int NVAB = 1;         // nombre de voitures du cote B (direction &lt;-)
 
-// typedef int[0,capacitePont-1] list_pont;
+typedef int[0, NVAA-1] idVoitureA;
+typedef int[0, NVAB-1] idVoitureB;
 
-typedef int[0, NVAA-1] listeVoituresA;
-typedef int[0, NVAB-1] listeVoituresB;
+chan demandeA[NVAA], demandeB[NVAB], goA[NVAA], goB[NVAB], okDirectionA, okDirectionB;
+
+</declaration><template><name x="5" y="5">CRTLP</name><declaration>// Place local declarations here.
+
+idVoitureA listeVoituresA[NVAA+1];
+int[0,NVAA] longueurFileA;
+
+// Placer element a la fin de la file A
+void enfilerA(idVoitureA element)
+{
+        listeVoituresA[longueurFileA++] = element;
+}
+
+// Enlever le premier element de la file
+void defilerA()
+{
+        int i = 0;
+        longueurFileA -= 1;
+        while (i &lt; longueurFileA)
+        {
+                listeVoituresA[i] = listeVoituresA[i + 1];
+                i++;
+        }
+        listeVoituresA[i] = 0;
+}
+
+// Retourne le premier element de la file A
+idVoitureA avantA()
+{
+   return listeVoituresA[0];
+}
+
+// Retourne le dernier element de la file A
+idVoitureA arriereA()
+{
+   return listeVoituresA[longueurFileA - 1];
+}
+
+</declaration><location id="id0" x="-320" y="-560"><name x="-304" y="-576">VoitureAEnRoute</name><committed/></location><location id="id1" x="-320" y="-688"><name x="-360" y="-720">Pont</name></location><init ref="id1"/><transition><source ref="id0"/><target ref="id1"/><label kind="select" x="-488" y="-662">e:idVoitureA</label><label kind="guard" x="-488" y="-647">e==avantA()</label><label kind="synchronisation" x="-488" y="-632">goA[e]!</label><label kind="assignment" x="-488" y="-615">defilerA()</label><nail x="-400" y="-560"/><nail x="-400" y="-688"/></transition><transition><source ref="id1"/><target ref="id0"/><label kind="select" x="-312" y="-655">e:idVoitureA</label><label kind="guard" x="-312" y="-640">longueurFileA&gt;0 &amp;&amp; e==avantA()</label><label kind="synchronisation" x="-312" y="-625">okDirectionA?</label></transition><transition><source ref="id1"/><target ref="id1"/><label kind="select" x="-272" y="-752">e:idVoitureA</label><label kind="synchronisation" x="-272" y="-736">demandeA[e]?</label><label kind="assignment" x="-272" y="-720">enfilerA(e)</label><nail x="-280" y="-688"/><nail x="-280" y="-752"/><nail x="-312" y="-752"/><nail x="-312" y="-720"/></transition></template><template><name>VAA</name><parameter>const idVoitureA id</parameter><declaration>// Place local declarations here.</declaration><location id="id2" x="184" y="-120"><name x="144" y="-104">ApresTraverse</name></location><location id="id3" x="64" y="-160"><name x="40" y="-200">SurPont</name></location><location id="id4" x="-48" y="-120"><name x="-72" y="-160">Depart</name></location><location id="id5" x="-176" y="-120"><name x="-200" y="-160">Attente</name></location><location id="id6" x="-320" y="-120"><name x="-352" y="-160">Approche</name></location><init ref="id6"/><transition><source ref="id2"/><target ref="id2"/><nail x="224" y="-120"/><nail x="224" y="-160"/><nail x="184" y="-160"/></transition><transition><source ref="id3"/><target ref="id2"/><nail x="120" y="-160"/></transition><transition><source ref="id4"/><target ref="id3"/><nail x="0" y="-160"/></transition><transition><source ref="id5"/><target ref="id4"/><label kind="synchronisation" x="-136" y="-112">goA[id]?</label></transition><transition><source ref="id6"/><target ref="id5"/><label kind="synchronisation" x="-296" y="-112">demandeA[id]!</label></transition></template><template><name>VAB</name><parameter>const idVoitureB id</parameter><declaration>// Place local declarations here.</declaration><location id="id7" x="-256" y="-48"><name x="-296" y="-32">ApresTraverse</name></location><location id="id8" x="-136" y="-80"><name x="-160" y="-120">SurPont</name></location><location id="id9" x="-16" y="-48"><name x="-32" y="-88">Depart</name></location><location id="id10" x="120" y="-48"><name x="96" y="-88">Attente</name></location><location id="id11" x="256" y="-48"><name x="224" y="-88">Approche</name></location><init ref="id11"/><transition><source ref="id7"/><target ref="id7"/><nail x="-296" y="-48"/><nail x="-296" y="-88"/><nail x="-256" y="-88"/></transition><transition><source ref="id8"/><target ref="id7"/><nail x="-200" y="-80"/></transition><transition><source ref="id9"/><target ref="id8"/><nail x="-56" y="-80"/></transition><transition><source ref="id10"/><target ref="id9"/><label kind="synchronisation" x="32" y="-40">goB[id]?</label></transition><transition><source ref="id11"/><target ref="id10"/><label kind="synchronisation" x="152" y="-40">demandeB[id]!</label></transition></template><template><name>P</name><declaration>// Place local declarations here.
+
+const int TEMPS_CHANGEMENT_DIRECTION = 15; // apres ce nombre de ticks on change de gauche a droite
+
+const int CAPACITE_PONT = 3; // nombre de voitures pouvant etre sur le pont
 
 
+clock horlogePont;
 
+// nombre de voitures A sur le pont
+int[0,CAPACITE_PONT] nbASurPont;
+int[0,CAPACITE_PONT] nbBSurPont;
 
-// chan appr[nombreA], stop[nombreA], leave[nombreA];</declaration><template><name x="5" y="5">CRTLP</name><declaration>// Place local declarations here.
-
-</declaration><location id="id0" x="-224" y="-152"></location><init ref="id0"/><transition><source ref="id0"/><target ref="id0"/><nail x="-144" y="-152"/><nail x="-144" y="-224"/><nail x="-224" y="-224"/></transition></template><template><name>VAA</name><parameter>const listeVoituresA id</parameter><declaration>// Place local declarations here.</declaration><location id="id1" x="184" y="-120"><name x="144" y="-104">ApresTraverse</name></location><location id="id2" x="64" y="-160"><name x="40" y="-200">SurPont</name></location><location id="id3" x="-48" y="-120"><name x="-72" y="-160">Depart</name></location><location id="id4" x="-160" y="-120"><name x="-184" y="-160">Attente</name></location><location id="id5" x="-280" y="-120"><name x="-312" y="-160">Approche</name></location><init ref="id5"/><transition><source ref="id1"/><target ref="id1"/><nail x="224" y="-120"/><nail x="224" y="-160"/><nail x="184" y="-160"/></transition><transition><source ref="id2"/><target ref="id1"/><nail x="120" y="-160"/></transition><transition><source ref="id3"/><target ref="id2"/><nail x="0" y="-160"/></transition><transition><source ref="id4"/><target ref="id3"/></transition><transition><source ref="id5"/><target ref="id4"/></transition></template><template><name>VAB</name><parameter>const listeVoituresB id</parameter><declaration>// Place local declarations here.</declaration><location id="id6" x="-256" y="-48"><name x="-296" y="-32">ApresTraverse</name></location><location id="id7" x="-136" y="-80"><name x="-160" y="-120">SurPont</name></location><location id="id8" x="-16" y="-48"><name x="-32" y="-88">Depart</name></location><location id="id9" x="104" y="-48"><name x="80" y="-88">Attente</name></location><location id="id10" x="224" y="-48"><name x="192" y="-88">Approche</name></location><init ref="id10"/><transition><source ref="id6"/><target ref="id6"/><nail x="-296" y="-48"/><nail x="-296" y="-88"/><nail x="-256" y="-88"/></transition><transition><source ref="id7"/><target ref="id6"/><nail x="-200" y="-80"/></transition><transition><source ref="id8"/><target ref="id7"/><nail x="-56" y="-80"/></transition><transition><source ref="id9"/><target ref="id8"/></transition><transition><source ref="id10"/><target ref="id9"/></transition></template><template><name>P</name><location id="id11" x="0" y="0"></location><init ref="id11"/><transition><source ref="id11"/><target ref="id11"/><nail x="104" y="0"/><nail x="104" y="-72"/><nail x="0" y="-72"/></transition></template><system>// Place template instantiations here.
+</declaration><location id="id12" x="88" y="24"><name x="112" y="0">DirectionB</name><label kind="invariant" x="112" y="16">horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label></location><location id="id13" x="-40" y="-112"><name x="-24" y="-144">DirectionA</name><label kind="invariant" x="-24" y="-128">horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label></location><init ref="id13"/><transition><source ref="id12"/><target ref="id12"/><label kind="guard" x="192" y="56">nbASurPont == 0 &amp;&amp;
+horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label><label kind="synchronisation" x="192" y="88">okDirectionB!</label><nail x="88" y="120"/><nail x="184" y="120"/><nail x="184" y="40"/><nail x="104" y="40"/></transition><transition><source ref="id12"/><target ref="id13"/><label kind="guard" x="-328" y="-56">horlogePont == TEMPS_CHANGEMENT_DIRECTION</label><label kind="assignment" x="-80" y="-40">horlogePont := 0</label></transition><transition><source ref="id13"/><target ref="id12"/><label kind="guard" x="56" y="-56">horlogePont == TEMPS_CHANGEMENT_DIRECTION</label><label kind="assignment" x="64" y="-40">horlogePont := 0</label><nail x="48" y="-40"/></transition><transition><source ref="id13"/><target ref="id13"/><label kind="guard" x="-120" y="-224">nbBSurPont == 0 &amp;&amp;
+horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label><label kind="synchronisation" x="-48" y="-192">okDirectionA!</label><nail x="-140" y="-113"/><nail x="-140" y="-185"/><nail x="-60" y="-185"/><nail x="-60" y="-129"/></transition></template><system>// Place template instantiations here.
 // Process = CRTLP();
 
 // List one or more processes to be composed into a system.
