@@ -3,20 +3,11 @@
 const int NVAA = 3;         // nombre de voitures du cote A (direction -&gt;)
 const int NVAB = 3;         // nombre de voitures du cote B (direction &lt;-)
 
-const int NVAPA = 1;         // nombre de voitures prioritaires du cote A (direction -&gt;)
-const int NVAPB = 1;         // nombre de voitures prioritaires du cote B (direction &lt;-)
-
 typedef int[0, NVAA-1] idVoitureA;
 typedef int[0, NVAB-1] idVoitureB;
 
-typedef int[0, NVAPA-1] idVoiturePA;
-typedef int[0, NVAPB-1] idVoiturePB;
-
 chan demandeA[NVAA], demandeB[NVAB], goA[NVAA], goB[NVAB];
-chan demandeAP[NVAPA], demandeBP[NVAPB], goAP[NVAPA], goBP[NVAPB];
 chan pontDirectionA, pontDirectionB, changerDirection, voitureSurPont, voitureQuitterPont;
-
-
 
 clock x;
 
@@ -106,107 +97,6 @@ idVoitureB arriereB()
    return listeVoituresB[longueurFileB - 1];
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// =============================================
-// || declarations pour voiture prioritaire A ||
-// =============================================
-
-idVoitureA listeVoituresPA[NVAPA];
-int[0,NVAPA] longueurFilePA;
-
-// Placer element a la fin de la file PA
-void enfilerPA(idVoitureA element)
-{
-        listeVoituresPA[longueurFilePA++] = element;
-}
-
-// Enlever le premier element de la file
-void defilerPA()
-{
-        int i = 0;
-        longueurFilePA -= 1;
-        while (i &lt; longueurFilePA)
-        {
-                listeVoituresPA[i] = listeVoituresPA[i + 1];
-                i++;
-        }
-        listeVoituresPA[i] = 0;
-}
-
-// Retourne le premier element de la file PA
-idVoitureA avantPA()
-{
-   return listeVoituresPA[0];
-}
-
-// Retourne le dernier element de la file PA
-idVoitureA arrierePA()
-{
-   return listeVoituresPA[longueurFilePA - 1];
-}
-
-
-
-// =============================================
-// || declarations pour voiture prioritaire B ||
-// =============================================
-
-idVoitureB listeVoituresPB[NVAPB];
-int[0,NVAPB] longueurFilePB;
-
-// Placer element a la fin de la file PB
-void enfilerPB(idVoitureB element)
-{
-        listeVoituresPB[longueurFilePB++] = element;
-}
-
-// Enlever le premier element de la file
-void defilerPB()
-{
-        int i = 0;
-        longueurFilePB -= 1;
-        while (i &lt; longueurFilePB)
-        {
-                listeVoituresPB[i] = listeVoituresPB[i + 1];
-                i++;
-        }
-        listeVoituresPB[i] = 0;
-}
-
-// Retourne le premier element de la file PB
-idVoitureB avantPB()
-{
-   return listeVoituresPB[0];
-}
-
-// Retourne le dernier element de la file PB
-idVoitureB arrierePB()
-{
-   return listeVoituresPB[longueurFilePB - 1];
-}
-
-
-
-
 </declaration><location id="id0" x="-744" y="-1520"><name x="-754" y="-1550">EnvoyerB</name><committed/></location><location id="id1" x="-744" y="-1272"><name x="-712" y="-1304">DirectionB</name><label kind="invariant" x="-712" y="-1288">nombreDautosPassees &lt;= NOMBRE_DAUTOS_A_PASSER &amp;&amp;
 x &lt; TEMPS_MAX</label></location><location id="id2" x="-744" y="-840"><name x="-728" y="-848">EnvoyerA</name><committed/></location><location id="id3" x="-744" y="-1040"><name x="-704" y="-1072">DirectionA</name><label kind="invariant" x="-704" y="-1056">nombreDautosPassees &lt;= NOMBRE_DAUTOS_A_PASSER &amp;&amp;
 x &lt; TEMPS_MAX</label></location><init ref="id3"/><transition><source ref="id1"/><target ref="id3"/><label kind="guard" x="-1272" y="-1264">nombreDautosPassees &gt;= NOMBRE_DAUTOS_A_PASSER ||
@@ -229,8 +119,8 @@ const int CAPACITE_PONT = 3; // nombre de voitures pouvant etre sur le pont (not
 
 int[0,CAPACITE_PONT] nbSurPont;
 
-</declaration><location id="id14" x="0" y="-32"></location><location id="id15" x="48" y="-64"></location><location id="id16" x="176" y="112"><name x="192" y="88">DirectionB</name></location><location id="id17" x="-136" y="-200"><name x="-224" y="-200">DirectionA</name></location><init ref="id17"/><transition><source ref="id14"/><target ref="id14"/><label kind="guard" x="-232" y="-39">nbSurPont &gt; 0</label><label kind="synchronisation" x="-232" y="-24">voitureQuitterPont?</label><label kind="assignment" x="-232" y="-9">nbSurPont -= 1</label><nail x="-104" y="-32"/><nail x="-104" y="8"/><nail x="-16" y="8"/><nail x="-16" y="-16"/></transition><transition><source ref="id15"/><target ref="id15"/><label kind="guard" x="184" y="-142">nbSurPont &gt; 0</label><label kind="synchronisation" x="184" y="-127">voitureQuitterPont?</label><label kind="assignment" x="184" y="-112">nbSurPont -= 1</label><nail x="48" y="-136"/><nail x="176" y="-136"/><nail x="176" y="-88"/><nail x="64" y="-88"/></transition><transition><source ref="id16"/><target ref="id16"/><label kind="synchronisation" x="288" y="40">voitureQuitterPont?</label><label kind="assignment" x="288" y="55">nbSurPont -= 1</label><nail x="176" y="32"/><nail x="280" y="32"/><nail x="280" y="80"/><nail x="192" y="80"/></transition><transition><source ref="id17"/><target ref="id17"/><label kind="synchronisation" x="-360" y="-160">voitureQuitterPont?</label><label kind="assignment" x="-360" y="-145">nbSurPont -= 1</label><nail x="-136" y="-136"/><nail x="-232" y="-136"/><nail x="-232" y="-168"/><nail x="-160" y="-168"/></transition><transition><source ref="id14"/><target ref="id17"/><label kind="guard" x="-144" y="-88">nbSurPont == 0</label></transition><transition><source ref="id16"/><target ref="id14"/><label kind="synchronisation" x="-48" y="40">changerDirection?</label></transition><transition><source ref="id15"/><target ref="id16"/><label kind="guard" x="96" y="-24">nbSurPont == 0</label></transition><transition><source ref="id17"/><target ref="id15"/><label kind="synchronisation" x="-64" y="-168">changerDirection?</label></transition><transition><source ref="id16"/><target ref="id16"/><label kind="synchronisation" x="-48" y="136">voitureSurPont?</label><label kind="assignment" x="-48" y="152">nbSurPont += 1</label><nail x="72" y="112"/><nail x="72" y="176"/><nail x="152" y="176"/><nail x="152" y="136"/></transition><transition><source ref="id17"/><target ref="id17"/><label kind="synchronisation" x="-104" y="-312">voitureSurPont?</label><label kind="assignment" x="-104" y="-296">nbSurPont += 1</label><nail x="-32" y="-200"/><nail x="-32" y="-272"/><nail x="-112" y="-272"/><nail x="-112" y="-216"/></transition><transition><source ref="id16"/><target ref="id16"/><label kind="guard" x="280" y="120">nbSurPont &lt;= CAPACITE_PONT</label><label kind="synchronisation" x="280" y="136">pontDirectionB!</label><nail x="272" y="112"/><nail x="272" y="176"/><nail x="200" y="176"/><nail x="192" y="128"/></transition><transition><source ref="id17"/><target ref="id17"/><label kind="guard" x="-352" y="-296">nbSurPont &lt;= CAPACITE_PONT</label><label kind="synchronisation" x="-352" y="-280">pontDirectionA!</label><nail x="-236" y="-201"/><nail x="-232" y="-264"/><nail x="-152" y="-264"/><nail x="-156" y="-217"/></transition></template><template><name>VAPA</name><parameter>const idVoiturePA id</parameter><location id="id18" x="344" y="144"><name x="312" y="160">ApresTraverse</name></location><location id="id19" x="160" y="104"><name x="176" y="88">SurPont</name></location><location id="id20" x="-16" y="144"><name x="-40" y="104">Depart</name><committed/></location><location id="id21" x="-134" y="142"><name x="-168" y="104">Attente</name></location><location id="id22" x="-312" y="144"><name x="-352" y="160">QuelquePart</name></location><init ref="id22"/><transition><source ref="id18"/><target ref="id22"/><nail x="344" y="64"/><nail x="-312" y="64"/></transition><transition><source ref="id19"/><target ref="id18"/><label kind="synchronisation" x="184" y="152">voitureQuitterPont!</label><nail x="208" y="144"/></transition><transition><source ref="id20"/><target ref="id19"/><label kind="synchronisation" x="40" y="112">voitureSurPont!</label><nail x="40" y="104"/></transition><transition><source ref="id21"/><target ref="id20"/><label kind="synchronisation" x="-104" y="152">goAP[id]?</label></transition><transition><source ref="id22"/><target ref="id21"/><label kind="synchronisation" x="-272" y="152">demandeAP[id]!</label></transition></template><template><name>VAPB</name><parameter>const idVoiturePB id</parameter><location id="id23" x="-312" y="128"><name x="-360" y="144">ApresTraverse</name></location><location id="id24" x="-112" y="88"><name x="-136" y="104">SurPont</name></location><location id="id25" x="48" y="128"><name x="32" y="88">Depart</name><committed/></location><location id="id26" x="208" y="128"><name x="184" y="88">Attente</name></location><location id="id27" x="376" y="128"><name x="360" y="144">QuelquePart</name></location><init ref="id27"/><transition><source ref="id23"/><target ref="id27"/><nail x="-312" y="48"/><nail x="376" y="48"/></transition><transition><source ref="id24"/><target ref="id23"/><label kind="synchronisation" x="-288" y="104">voitureQuitterPont!</label><nail x="-168" y="128"/></transition><transition><source ref="id25"/><target ref="id24"/><label kind="synchronisation" x="-80" y="64">voitureSurPont!</label><nail x="8" y="88"/></transition><transition><source ref="id26"/><target ref="id25"/><label kind="synchronisation" x="104" y="136">goBP[id]?</label></transition><transition><source ref="id27"/><target ref="id26"/><label kind="synchronisation" x="248" y="136">demandeBP[id]!</label></transition></template><system>// Place template instantiations here.
+</declaration><location id="id14" x="0" y="-32"></location><location id="id15" x="48" y="-64"></location><location id="id16" x="176" y="112"><name x="192" y="88">DirectionB</name></location><location id="id17" x="-136" y="-200"><name x="-224" y="-200">DirectionA</name></location><init ref="id17"/><transition><source ref="id14"/><target ref="id14"/><label kind="guard" x="-232" y="-39">nbSurPont &gt; 0</label><label kind="synchronisation" x="-232" y="-24">voitureQuitterPont?</label><label kind="assignment" x="-232" y="-9">nbSurPont -= 1</label><nail x="-104" y="-32"/><nail x="-104" y="8"/><nail x="-16" y="8"/><nail x="-16" y="-16"/></transition><transition><source ref="id15"/><target ref="id15"/><label kind="guard" x="184" y="-142">nbSurPont &gt; 0</label><label kind="synchronisation" x="184" y="-127">voitureQuitterPont?</label><label kind="assignment" x="184" y="-112">nbSurPont -= 1</label><nail x="48" y="-136"/><nail x="176" y="-136"/><nail x="176" y="-88"/><nail x="64" y="-88"/></transition><transition><source ref="id16"/><target ref="id16"/><label kind="synchronisation" x="288" y="40">voitureQuitterPont?</label><label kind="assignment" x="288" y="55">nbSurPont -= 1</label><nail x="176" y="32"/><nail x="280" y="32"/><nail x="280" y="80"/><nail x="192" y="80"/></transition><transition><source ref="id17"/><target ref="id17"/><label kind="synchronisation" x="-360" y="-160">voitureQuitterPont?</label><label kind="assignment" x="-360" y="-145">nbSurPont -= 1</label><nail x="-136" y="-136"/><nail x="-232" y="-136"/><nail x="-232" y="-168"/><nail x="-160" y="-168"/></transition><transition><source ref="id14"/><target ref="id17"/><label kind="guard" x="-144" y="-88">nbSurPont == 0</label></transition><transition><source ref="id16"/><target ref="id14"/><label kind="synchronisation" x="-48" y="40">changerDirection?</label></transition><transition><source ref="id15"/><target ref="id16"/><label kind="guard" x="96" y="-24">nbSurPont == 0</label></transition><transition><source ref="id17"/><target ref="id15"/><label kind="synchronisation" x="-64" y="-168">changerDirection?</label></transition><transition><source ref="id16"/><target ref="id16"/><label kind="synchronisation" x="-48" y="136">voitureSurPont?</label><label kind="assignment" x="-48" y="152">nbSurPont += 1</label><nail x="72" y="112"/><nail x="72" y="176"/><nail x="152" y="176"/><nail x="152" y="136"/></transition><transition><source ref="id17"/><target ref="id17"/><label kind="synchronisation" x="-104" y="-312">voitureSurPont?</label><label kind="assignment" x="-104" y="-296">nbSurPont += 1</label><nail x="-32" y="-200"/><nail x="-32" y="-272"/><nail x="-112" y="-272"/><nail x="-112" y="-216"/></transition><transition><source ref="id16"/><target ref="id16"/><label kind="guard" x="280" y="120">nbSurPont &lt;= CAPACITE_PONT</label><label kind="synchronisation" x="280" y="136">pontDirectionB!</label><nail x="272" y="112"/><nail x="272" y="176"/><nail x="200" y="176"/><nail x="192" y="128"/></transition><transition><source ref="id17"/><target ref="id17"/><label kind="guard" x="-352" y="-296">nbSurPont &lt;= CAPACITE_PONT</label><label kind="synchronisation" x="-352" y="-280">pontDirectionA!</label><nail x="-236" y="-201"/><nail x="-232" y="-264"/><nail x="-152" y="-264"/><nail x="-156" y="-217"/></transition></template><system>// Place template instantiations here.
 // Process = CRTLP();
 
 // List one or more processes to be composed into a system.
-system VAA, VAB, VAPA, VAPB, CRTLP, P;</system></nta>
+system VAA, VAB, CRTLP, P;</system></nta>
