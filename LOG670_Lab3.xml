@@ -9,12 +9,11 @@ typedef int[0, NVAB-1] idVoitureB;
 chan demandeA[NVAA], demandeB[NVAB], goA[NVAA], goB[NVAB], pontDirectionA, pontDirectionB, changerDirection, voitureSurPont, voitureQuitterPont;
 
 idVoitureA listeVoituresA[NVAA];
-</declaration><template><name x="5" y="5">CRTLP</name><declaration>// Place local declarations here.
-
-const int NOMBRE_DAUTOS_A_PASSER = 20; // apres ce nombre de voitures on change de direction
-const int TEMPS_MAX  = 10; // apres ce nombre de ticks on change de direction
 
 clock x;
+
+const int NOMBRE_DAUTOS_A_PASSER = 20; // apres ce nombre de voitures on change de direction
+const int TEMPS_MAX  = 10; // apres ce nombre de ticks on change de direction</declaration><template><name x="5" y="5">CRTLP</name><declaration>// Place local declarations here.
 
 int nombreDautosPassees = 0;
 
