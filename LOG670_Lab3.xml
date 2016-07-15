@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
 
-const int NVAA = 4;         // nombre de voitures du cote A (direction -&gt;)
-const int NVAB = 1;         // nombre de voitures du cote B (direction &lt;-)
+const int NVAA = 2;         // nombre de voitures du cote A (direction -&gt;)
+const int NVAB = 2;         // nombre de voitures du cote B (direction &lt;-)
 
 typedef int[0, NVAA-1] idVoitureA;
 typedef int[0, NVAB-1] idVoitureB;
 
-chan demandeA[NVAA], demandeB[NVAB], goA[NVAA], goB[NVAB], okDirectionA, okDirectionB;
+chan demandeA[NVAA], demandeB[NVAB], goA[NVAA], goB[NVAB], pontDirectionA, pontDirectionB, changerDirection;
 
 </declaration><template><name x="5" y="5">CRTLP</name><declaration>// Place local declarations here.
 
-idVoitureA listeVoituresA[NVAA+1];
+const int NOMBRE_DAUTOS_A_PASSER = 2; // apres ce nombre de voitures on change de direction
+
+int nombreDautosPassees = 0;
+
+// =========================================
+// || declarations pour voiture A         ||
+// =========================================
+
+idVoitureA listeVoituresA[NVAA];
 int[0,NVAA] longueurFileA;
 
 // Placer element a la fin de la file A
@@ -44,22 +52,62 @@ idVoitureA arriereA()
    return listeVoituresA[longueurFileA - 1];
 }
 
-</declaration><location id="id0" x="-320" y="-560"><name x="-304" y="-576">VoitureAEnRoute</name><committed/></location><location id="id1" x="-320" y="-688"><name x="-360" y="-720">Pont</name></location><init ref="id1"/><transition><source ref="id0"/><target ref="id1"/><label kind="select" x="-488" y="-662">e:idVoitureA</label><label kind="guard" x="-488" y="-647">e==avantA()</label><label kind="synchronisation" x="-488" y="-632">goA[e]!</label><label kind="assignment" x="-488" y="-615">defilerA()</label><nail x="-400" y="-560"/><nail x="-400" y="-688"/></transition><transition><source ref="id1"/><target ref="id0"/><label kind="select" x="-312" y="-655">e:idVoitureA</label><label kind="guard" x="-312" y="-640">longueurFileA&gt;0 &amp;&amp; e==avantA()</label><label kind="synchronisation" x="-312" y="-625">okDirectionA?</label></transition><transition><source ref="id1"/><target ref="id1"/><label kind="select" x="-272" y="-752">e:idVoitureA</label><label kind="synchronisation" x="-272" y="-736">demandeA[e]?</label><label kind="assignment" x="-272" y="-720">enfilerA(e)</label><nail x="-280" y="-688"/><nail x="-280" y="-752"/><nail x="-312" y="-752"/><nail x="-312" y="-720"/></transition></template><template><name>VAA</name><parameter>const idVoitureA id</parameter><declaration>// Place local declarations here.</declaration><location id="id2" x="184" y="-120"><name x="144" y="-104">ApresTraverse</name></location><location id="id3" x="64" y="-160"><name x="40" y="-200">SurPont</name></location><location id="id4" x="-48" y="-120"><name x="-72" y="-160">Depart</name></location><location id="id5" x="-176" y="-120"><name x="-200" y="-160">Attente</name></location><location id="id6" x="-320" y="-120"><name x="-352" y="-160">Approche</name></location><init ref="id6"/><transition><source ref="id2"/><target ref="id6"/><nail x="184" y="-280"/><nail x="-320" y="-280"/></transition><transition><source ref="id3"/><target ref="id2"/><nail x="120" y="-160"/></transition><transition><source ref="id4"/><target ref="id3"/><nail x="0" y="-160"/></transition><transition><source ref="id5"/><target ref="id4"/><label kind="synchronisation" x="-136" y="-112">goA[id]?</label></transition><transition><source ref="id6"/><target ref="id5"/><label kind="synchronisation" x="-296" y="-112">demandeA[id]!</label></transition></template><template><name>VAB</name><parameter>const idVoitureB id</parameter><declaration>// Place local declarations here.</declaration><location id="id7" x="-256" y="-48"><name x="-296" y="-32">ApresTraverse</name></location><location id="id8" x="-136" y="-80"><name x="-160" y="-120">SurPont</name></location><location id="id9" x="-16" y="-48"><name x="-32" y="-88">Depart</name></location><location id="id10" x="120" y="-48"><name x="96" y="-88">Attente</name></location><location id="id11" x="256" y="-48"><name x="224" y="-88">Approche</name></location><init ref="id11"/><transition><source ref="id7"/><target ref="id11"/><nail x="-256" y="-208"/><nail x="256" y="-208"/></transition><transition><source ref="id8"/><target ref="id7"/><nail x="-200" y="-80"/></transition><transition><source ref="id9"/><target ref="id8"/><nail x="-56" y="-80"/></transition><transition><source ref="id10"/><target ref="id9"/><label kind="synchronisation" x="32" y="-40">goB[id]?</label></transition><transition><source ref="id11"/><target ref="id10"/><label kind="synchronisation" x="152" y="-40">demandeB[id]!</label></transition></template><template><name>P</name><declaration>// Place local declarations here.
-
-const int TEMPS_CHANGEMENT_DIRECTION = 15; // apres ce nombre de ticks on change de gauche a droite
-
-const int CAPACITE_PONT = 3; // nombre de voitures pouvant etre sur le pont
 
 
-clock horlogePont;
+// =========================================
+// || declarations pour voiture B         ||
+// =========================================
+
+// declarations pour voiture B
+idVoitureB listeVoituresB[NVAB];
+int[0,NVAB] longueurFileB;
+
+// Placer element a la fin de la file B
+void enfilerB(idVoitureB element)
+{
+        listeVoituresB[longueurFileB++] = element;
+}
+
+// Enlever le premier element de la file
+void defilerB()
+{
+        int i = 0;
+        longueurFileB -= 1;
+        while (i &lt; longueurFileB)
+        {
+                listeVoituresB[i] = listeVoituresB[i + 1];
+                i++;
+        }
+        listeVoituresB[i] = 0;
+}
+
+// Retourne le premier element de la file B
+idVoitureB avantB()
+{
+   return listeVoituresB[0];
+}
+
+// Retourne le dernier element de la file B
+idVoitureB arriereB()
+{
+   return listeVoituresB[longueurFileB - 1];
+}
+
+
+
+</declaration><location id="id0" x="-328" y="-1240"><committed/></location><location id="id1" x="-328" y="-840"><name x="-312" y="-856">VoitureAEnRoute</name><committed/></location><location id="id2" x="-328" y="-1040"><label kind="invariant" x="-304" y="-1064">nombreDautosPassees &lt;= NOMBRE_DAUTOS_A_PASSER</label></location><init ref="id2"/><transition><source ref="id2"/><target ref="id2"/><label kind="guard" x="-864" y="-1072">nombreDautosPassees &gt;= NOMBRE_DAUTOS_A_PASSER</label><label kind="synchronisation" x="-592" y="-1056">changerDirection!</label><label kind="assignment" x="-656" y="-1040">nombreDautosPassees := 0</label><nail x="-472" y="-1072"/><nail x="-472" y="-1016"/></transition><transition><source ref="id0"/><target ref="id2"/><label kind="select" x="-600" y="-1173">e:idVoitureB</label><label kind="guard" x="-600" y="-1158">e==avantB()</label><label kind="synchronisation" x="-600" y="-1143">goB[e]!</label><label kind="assignment" x="-600" y="-1128">defilerB(),
+nombreDautosPassees += 1</label><nail x="-408" y="-1240"/><nail x="-408" y="-1104"/></transition><transition><source ref="id2"/><target ref="id0"/><label kind="select" x="-320" y="-1224">e:idVoitureB</label><label kind="guard" x="-320" y="-1208">longueurFileB&gt;0 &amp;&amp; e==avantB() &amp;&amp; 
+nombreDautosPassees &lt; NOMBRE_DAUTOS_A_PASSER</label><label kind="synchronisation" x="-320" y="-1176">pontDirectionB?</label><nail x="-328" y="-1056"/></transition><transition><source ref="id2"/><target ref="id2"/><label kind="select" x="-192" y="-1136">e:idVoitureB</label><label kind="synchronisation" x="-192" y="-1120">demandeB[e]?</label><label kind="assignment" x="-192" y="-1104">enfilerB(e)</label><nail x="-296" y="-1072"/><nail x="-200" y="-1072"/><nail x="-200" y="-1128"/><nail x="-296" y="-1128"/></transition><transition><source ref="id1"/><target ref="id2"/><label kind="select" x="-528" y="-894">e:idVoitureA</label><label kind="guard" x="-528" y="-879">e==avantA()</label><label kind="synchronisation" x="-528" y="-864">goA[e]!</label><label kind="assignment" x="-528" y="-848">defilerA(),
+nombreDautosPassees += 1</label><nail x="-408" y="-840"/><nail x="-408" y="-960"/></transition><transition><source ref="id2"/><target ref="id1"/><label kind="select" x="-320" y="-934">e:idVoitureA</label><label kind="guard" x="-320" y="-920">longueurFileA&gt;0 &amp;&amp; e==avantA() &amp;&amp; 
+nombreDautosPassees &lt; NOMBRE_DAUTOS_A_PASSER</label><label kind="synchronisation" x="-320" y="-888">pontDirectionA?</label><nail x="-328" y="-1008"/></transition><transition><source ref="id2"/><target ref="id2"/><label kind="select" x="-200" y="-1032">e:idVoitureA</label><label kind="synchronisation" x="-200" y="-1016">demandeA[e]?</label><label kind="assignment" x="-200" y="-1000">enfilerA(e)</label><label kind="comments">Des qu'une voiture arrive, elle entre dans la file</label><nail x="-296" y="-976"/><nail x="-208" y="-976"/><nail x="-208" y="-1032"/><nail x="-288" y="-1032"/></transition></template><template><name>VAA</name><parameter>const idVoitureA id</parameter><declaration>// Place local declarations here.</declaration><location id="id3" x="184" y="-120"><name x="144" y="-104">ApresTraverse</name></location><location id="id4" x="64" y="-160"><name x="40" y="-144">SurPont</name></location><location id="id5" x="-48" y="-120"><name x="-72" y="-160">Depart</name></location><location id="id6" x="-176" y="-120"><name x="-200" y="-160">Attente</name></location><location id="id7" x="-344" y="-120"><name x="-376" y="-104">Approche</name></location><init ref="id7"/><transition><source ref="id3"/><target ref="id7"/><nail x="184" y="-192"/><nail x="-344" y="-192"/></transition><transition><source ref="id4"/><target ref="id3"/><nail x="120" y="-160"/></transition><transition><source ref="id5"/><target ref="id4"/><nail x="0" y="-160"/></transition><transition><source ref="id6"/><target ref="id5"/><label kind="synchronisation" x="-136" y="-112">goA[id]?</label></transition><transition><source ref="id7"/><target ref="id6"/><label kind="synchronisation" x="-296" y="-112">demandeA[id]!</label></transition></template><template><name>VAB</name><parameter>const idVoitureB id</parameter><declaration>// Place local declarations here.</declaration><location id="id8" x="-256" y="-48"><name x="-296" y="-32">ApresTraverse</name></location><location id="id9" x="-136" y="-80"><name x="-160" y="-64">SurPont</name></location><location id="id10" x="-16" y="-48"><name x="-32" y="-88">Depart</name></location><location id="id11" x="120" y="-48"><name x="96" y="-88">Attente</name></location><location id="id12" x="272" y="-48"><name x="256" y="-32">Approche</name></location><init ref="id12"/><transition><source ref="id8"/><target ref="id12"/><nail x="-256" y="-128"/><nail x="272" y="-128"/></transition><transition><source ref="id9"/><target ref="id8"/><nail x="-200" y="-80"/></transition><transition><source ref="id10"/><target ref="id9"/><nail x="-56" y="-80"/></transition><transition><source ref="id11"/><target ref="id10"/><label kind="synchronisation" x="32" y="-40">goB[id]?</label></transition><transition><source ref="id12"/><target ref="id11"/><label kind="synchronisation" x="152" y="-40">demandeB[id]!</label></transition></template><template><name>P</name><declaration>// Place local declarations here.
+
+// const int CAPACITE_PONT = 3; // nombre de voitures pouvant etre sur le pont (not implemented)
 
 // nombre de voitures A sur le pont
-int[0,CAPACITE_PONT] nbASurPont;
-int[0,CAPACITE_PONT] nbBSurPont;
+// int[0,CAPACITE_PONT] nbASurPont;
+// int[0,CAPACITE_PONT] nbBSurPont;
 
-</declaration><location id="id12" x="88" y="24"><name x="112" y="0">DirectionB</name><label kind="invariant" x="112" y="16">horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label></location><location id="id13" x="-40" y="-112"><name x="-24" y="-144">DirectionA</name><label kind="invariant" x="-24" y="-128">horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label></location><init ref="id13"/><transition><source ref="id12"/><target ref="id12"/><label kind="guard" x="192" y="56">nbASurPont == 0 &amp;&amp;
-horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label><label kind="synchronisation" x="192" y="88">okDirectionB!</label><nail x="88" y="120"/><nail x="184" y="120"/><nail x="184" y="40"/><nail x="104" y="40"/></transition><transition><source ref="id12"/><target ref="id13"/><label kind="guard" x="-328" y="-56">horlogePont == TEMPS_CHANGEMENT_DIRECTION</label><label kind="assignment" x="-80" y="-40">horlogePont := 0</label></transition><transition><source ref="id13"/><target ref="id12"/><label kind="guard" x="56" y="-56">horlogePont == TEMPS_CHANGEMENT_DIRECTION</label><label kind="assignment" x="64" y="-40">horlogePont := 0</label><nail x="48" y="-40"/></transition><transition><source ref="id13"/><target ref="id13"/><label kind="guard" x="-120" y="-224">nbBSurPont == 0 &amp;&amp;
-horlogePont &lt; TEMPS_CHANGEMENT_DIRECTION</label><label kind="synchronisation" x="-48" y="-192">okDirectionA!</label><nail x="-140" y="-113"/><nail x="-140" y="-185"/><nail x="-60" y="-185"/><nail x="-60" y="-129"/></transition></template><system>// Place template instantiations here.
+</declaration><location id="id13" x="88" y="24"><name x="112" y="0">DirectionB</name></location><location id="id14" x="-40" y="-112"><name x="-24" y="-144">DirectionA</name></location><init ref="id14"/><transition><source ref="id13"/><target ref="id13"/><label kind="synchronisation" x="192" y="72">pontDirectionB!</label><nail x="88" y="120"/><nail x="184" y="120"/><nail x="184" y="40"/><nail x="104" y="40"/></transition><transition><source ref="id13"/><target ref="id14"/><label kind="synchronisation" x="-88" y="-40">changerDirection?</label></transition><transition><source ref="id14"/><target ref="id13"/><label kind="synchronisation" x="40" y="-72">changerDirection?</label><nail x="48" y="-40"/></transition><transition><source ref="id14"/><target ref="id14"/><label kind="synchronisation" x="-48" y="-192">pontDirectionA!</label><nail x="-140" y="-113"/><nail x="-140" y="-185"/><nail x="-60" y="-185"/><nail x="-60" y="-129"/></transition></template><system>// Place template instantiations here.
 // Process = CRTLP();
 
 // List one or more processes to be composed into a system.
