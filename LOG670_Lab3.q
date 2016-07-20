@@ -6,12 +6,12 @@
 //NO_QUERY
 
 /*
-
+V\u00e9rifie que les autos B traversent avant un certain d\u00e9lai
 */
 A[] VAB(0).crossing imply VAB(0).horlogeTraverse <= TEMPS_MAX * NVAB * 2
 
 /*
-
+V\u00e9rifie que les autos A traversent avant un certain d\u00e9lai
 */
 A[] VAA(0).crossing imply VAA(0).horlogeTraverse <= TEMPS_MAX * NVAA * 2
 
