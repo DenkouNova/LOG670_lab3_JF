@@ -8,22 +8,12 @@
 /*
 
 */
-VAB(1).Attente --> VAB(1).ApresTraverse && x <= TEMPS_MAX * NVAB
+A[] VAB(0).crossing imply VAB(0).horlogeTraverse <= TEMPS_MAX * NVAB * 2
 
 /*
 
 */
-VAB(0).Attente --> VAB(0).ApresTraverse && x <= TEMPS_MAX * NVAB
-
-/*
-
-*/
-VAA(1).Attente --> VAA(1).ApresTraverse && x <= TEMPS_MAX * NVAA
-
-/*
-cet 
-*/
-VAA(0).Attente --> VAA(0).ApresTraverse && x <= TEMPS_MAX * NVAA
+A[] VAA(0).crossing imply VAA(0).horlogeTraverse <= TEMPS_MAX * NVAA * 2
 
 /*
 Lorsqu'une voiture A est sur le pont, il n'y a aucune voiture B sur le pont. Lorsqu'une voiture B est sur le pont, il n'y a aucune voiture A sur le pont.
